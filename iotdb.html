@@ -1,0 +1,114 @@
+<script type="text/javascript">
+    /*global RED*/
+    RED.nodes.registerType('iotdb-config', {
+        category: 'config',
+        defaults: {
+            name: { value: '' },
+            scheme: { value: 'http', required: true },
+            host: { value: 'localhost', required: true },
+            port: { value: 18080, required: true, validate: RED.validators.number() },
+            model: { value: 'tree', required: true },
+            username: { value: 'root' },
+            timeoutMs: { value: 15000, required: true, validate: RED.validators.number() },
+            rowLimit: { value: 1000, required: true, validate: RED.validators.number() }
+        },
+        credentials: {
+            password: { type: 'password' }
+        },
+        label: function () {
+            return this.name || this.host || 'IoTDB server';
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="iotdb-config">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="IoTDB server">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-scheme"><i class="fa fa-lock"></i> Protocol</label>
+        <select id="node-config-input-scheme">
+            <option value="http">HTTP</option>
+            <option value="https">HTTPS</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-host"><i class="fa fa-server"></i> Host</label>
+        <input type="text" id="node-config-input-host" placeholder="localhost">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-port"><i class="fa fa-plug"></i> REST port</label>
+        <input type="number" id="node-config-input-port" min="1" max="65535" placeholder="18080">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-model"><i class="fa fa-database"></i> SQL model</label>
+        <select id="node-config-input-model">
+            <option value="tree">Tree</option>
+            <option value="table">Table</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-username"><i class="fa fa-user"></i> Username</label>
+        <input type="text" id="node-config-input-username" autocomplete="username">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-password"><i class="fa fa-key"></i> Password</label>
+        <input type="password" id="node-config-input-password" autocomplete="new-password">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-timeoutMs"><i class="fa fa-clock-o"></i> Timeout (ms)</label>
+        <input type="number" id="node-config-input-timeoutMs" min="1" max="300000" placeholder="15000">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-rowLimit"><i class="fa fa-list-ol"></i> Row limit</label>
+        <input type="number" id="node-config-input-rowLimit" min="1" max="100000" placeholder="1000">
+    </div>
+</script>
+
+<script type="text/javascript">
+    /*global RED*/
+    RED.nodes.registerType('iotdb-query', {
+        category: 'IoTDB',
+        color: '#d7e8d4',
+        defaults: {
+            name: { value: '' },
+            server: { value: '', type: 'iotdb-config', required: true },
+            database: { value: '' },
+            sql: { value: '' }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'font-awesome/fa-database',
+        paletteLabel: 'query',
+        label: function () {
+            return this.name || (this.database ? 'IoTDB ' + this.database : 'IoTDB query');
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="iotdb-query">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="IoTDB query">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-database"><i class="fa fa-database"></i> Database</label>
+        <input type="text" id="node-input-database" placeholder="Optional; used by Table model">
+    </div>
+    <div class="form-row">
+        <label for="node-input-sql"><i class="fa fa-code"></i> SQL</label>
+        <textarea id="node-input-sql" rows="5" style="width:70%; resize:vertical" placeholder="Optional; msg.payload can provide SQL"></textarea>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="iotdb-query">
+    <p>Executes SQL against Apache IoTDB REST service.</p>
+    <p>Supply SQL as a string in <code>msg.payload</code>, as <code>msg.payload.sql</code>, or in the node configuration. The result JSON replaces <code>msg.payload</code>.</p>
+    <p>Tree model uses REST v2 at <code>/rest/v2</code>; Table model uses <code>/rest/table/v1</code> and sends the configured database. SELECT, SHOW, LIST, DESCRIBE, and EXPLAIN statements use the query endpoint; other statements use the non-query endpoint.</p>
+    <p>Set <code>msg.database</code> or <code>msg.iotdb.database</code> to override the node's database. Set <code>msg.iotdb.action</code> to <code>query</code> or <code>nonQuery</code> to override SQL classification.</p>
+</script>

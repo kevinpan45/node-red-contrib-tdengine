@@ -1,8 +1,11 @@
 {
     "name": "node-red-contrib-tdengine",
     "version": "0.0.5",
-    "description": "",
+    "description": "Node-RED connections and SQL queries for time-series databases",
     "main": "tdengine.js",
+    "scripts": {
+        "test": "node --test test/iotdb.test.js"
+    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/kevinpan45/node-red-contrib-tdengine.git"
@@ -10,15 +13,19 @@
     "author": "kevinpan45@163.com",
     "license": "ISC",
     "dependencies": {
-        "axios": "1.13.5"
+        "axios": "1.13.5",
+        "json-bigint": "^1.0.0"
     },
     "node-red": {
         "nodes": {
+            "iotdb": "iotdb.js",
             "tdengine": "tdengine.js"
         }
     },
     "keywords": [
         "node-red",
+        "iotdb",
+        "apache-iotdb",
         "tdengine"
     ],
     "devDependencies": {
